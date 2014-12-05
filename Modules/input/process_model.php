@@ -93,6 +93,9 @@ class Process
         
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
+        //New feature for accumulate input between time feed and reset after save value on feed
+        $list[35] = array(_("Accumulate and feed"),ProcessArg::FEEDID,"Accum_and_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
+        
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -167,6 +170,16 @@ class Process
     public function log_to_feed($id, $time, $value)
     {
         $this->feed->insert_data($id, $time, $time, $value);
+
+        return $value;
+    }
+    
+    //---------------------------------------------------------------------------------------
+    // Accumlate all new input. Put in redis and when the interval is end, log to feed
+    //---------------------------------------------------------------------------------------
+    public function Accum_and_feed($id, $time, $value)
+    {
+        //$this->feed->insert_data($id, $time, $time, $value);
 
         return $value;
     }
