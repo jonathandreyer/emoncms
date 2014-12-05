@@ -90,6 +90,7 @@ input[type="text"] {
                             <option value=120>2 mins</option>
                             <option value=300>5 mins</option>
                             <option value=600>10 mins</option>
+                            <option value=900>15 mins</option>
                             <option value=1200>20 mins</option>
                             <option value=1800>30 mins</option>
                             <option value=3600>1 hour</option>
