@@ -58,6 +58,7 @@ cursor:pointer
     <div class="modal-body">
     <p>Selected feed: <b><span id="SelectedExportFeed"></span></b></p>
     <p>Select the time range and interval that you wish to export: </p>
+    <p>Interval time of feed: <span id="SelectedExportFeed"></span></p>
     
         <table class="table">
         <tr>
@@ -105,6 +106,7 @@ cursor:pointer
         </tr>
         <tr>
             <td><br><button class="btn" id="export">Export</button></td><td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
+            <td><div class="checkbox"><label><input type="checkbox"> Change mode average to addition</label></tr>
         </tr>
         </table>
         <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
