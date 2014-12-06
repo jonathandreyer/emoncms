@@ -57,9 +57,9 @@ cursor:pointer
     </div>
     <div class="modal-body">
     <p>Selected feed: <b><span id="SelectedExportFeed"></span></b></p>
+    <p>Interval time of feed: <b><span id="IntervalTimeFeed"></span></b></p>
     <p>Select the time range and interval that you wish to export: </p>
-    <p>Interval time of feed: <span id="SelectedExportFeed"></span></p>
-    
+
         <table class="table">
         <tr>
             <td>
@@ -106,9 +106,9 @@ cursor:pointer
         </tr>
         <tr>
             <td><br><button class="btn" id="export">Export</button></td>
-	    <td><label><input type="checkbox" id="checkbox-addition-mode">Change mode average to addition</label></td>
+			<td><label><input type="checkbox" id="checkbox-addition-mode">Change mode average to addition</label></td>
             <td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>    
-	</tr>
+		</tr>
 	<tr>
 		
 	</tr>
@@ -188,6 +188,50 @@ cursor:pointer
         } });
     }
 
+    function getFeedInterval(idFeed)
+    {   
+		var idFeed = parseInt(idFeed);
+        var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+        
+        $.ajax({ url: path+"feed/getmeta.json"+apikeystr+"?id="+idFeed, dataType: 'json', async: true, success: function(data) {
+        	
+		//retourner la valeur en sec
+		interval = 10;
+		//alert("value return: " + interval);
+
+
+		//
+		$("#IntervalTimeFeed").html(interval);
+
+		//$("#export-interval").html(interval);
+
+
+            /*table.data = data;
+        
+            for (z in table.data)
+            {
+                if (table.data[z].size<1024*100) {
+                    table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
+                } else if (table.data[z].size<1024*1024) {
+                    table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
+                } else if (table.data[z].size>=1024*1024) {
+                    table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
+                }
+            }
+            table.draw();
+            if (table.data.length != 0) {
+                $("#nofeeds").hide();
+                $("#apihelphead").show();
+                $("#localheading").show();
+            } else {
+                $("#nofeeds").show();
+                $("#localheading").hide();
+                $("#apihelphead").hide();
+            }
+*/
+        } });
+    }
+
     var updater = setInterval(update, 5000);
 
     $("#table").bind("onEdit", function(e){
@@ -222,16 +266,17 @@ cursor:pointer
         $.ajax({ url: path+"feed/updatesize.json", success: function(data){update();} });
     });
     
-    
     // Feed Export feature   
     $("#table").on("click",".icon-circle-arrow-down", function(){
         var row = $(this).attr('row');
 
+	getFeedInterval(table.data[row].id);
+
 	$("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
         $("#export").attr('feedid',table.data[row].id);
 	
-	//TODO Change value en fonction de type de feed
-	//$("#checkbox-addition-mode").attr("checked",true);
+		//TODO Change value en fonction de type de feed
+		//$("#checkbox-addition-mode").attr("checked",true);
 
         if ($("#export-timezone").val()=="") {
             var u = user.get();
@@ -276,9 +321,9 @@ cursor:pointer
         var export_end = parse_timepicker_time($("#export-end").val());
         var export_interval = $("#export-interval").val();
         var export_timezone = parseInt($("#export-timezone").val());
-	var export_mode_addition = document.getElementById('checkbox-addition-mode').checked;
+		var export_mode_addition = document.getElementById('checkbox-addition-mode').checked;
         
-	if (export_mode_addition) {alert("Function not install"); return false; }
+		if (export_mode_addition) {alert("Function not install"); return false; }
         if (!export_start) {alert("Please enter a valid start date"); return false; }
         if (!export_end) {alert("Please enter a valid end date"); return false; }
         if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
@@ -287,7 +332,7 @@ cursor:pointer
         
         if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
         
-        window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone*3600))+"&end="+(export_end+(export_timezone*3600))+"&interval="+export_interval);
+        window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone*3600))+"&end="+(export_end+(export_timezone*3600))+"&interval="+export_interval+"&addition="+export_mode_addition);
     });
     
     function parse_timepicker_time(timestr)
