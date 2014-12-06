@@ -106,9 +106,12 @@ cursor:pointer
         </tr>
         <tr>
             <td><br><button class="btn" id="export">Export</button></td>
-            <td><div class="checkbox"><label><input type="addition-mode"> Change mode average to addition</label></tr>
-            <td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
-        </tr>
+	    <td><label><input type="checkbox" id="checkbox-addition-mode">Change mode average to addition</label></td>
+            <td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>    
+	</tr>
+	<tr>
+		
+	</tr>
         </table>
         <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
         <p>Averages are only returned for feed engines with built in averaging.</p>
@@ -220,13 +223,16 @@ cursor:pointer
     });
     
     
-    // Feed Export feature
-    
+    // Feed Export feature   
     $("#table").on("click",".icon-circle-arrow-down", function(){
         var row = $(this).attr('row');
-        $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
+
+	$("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
         $("#export").attr('feedid',table.data[row].id);
-        
+	
+	//TODO Change value en fonction de type de feed
+	//$("#checkbox-addition-mode").attr("checked",true);
+
         if ($("#export-timezone").val()=="") {
             var u = user.get();
             if (u.timezone==null) u.timezone = 0;
@@ -270,7 +276,9 @@ cursor:pointer
         var export_end = parse_timepicker_time($("#export-end").val());
         var export_interval = $("#export-interval").val();
         var export_timezone = parseInt($("#export-timezone").val());
+	var export_mode_addition = document.getElementById('checkbox-addition-mode').checked;
         
+	if (export_mode_addition) {alert("Function not install"); return false; }
         if (!export_start) {alert("Please enter a valid start date"); return false; }
         if (!export_end) {alert("Please enter a valid end date"); return false; }
         if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
@@ -280,16 +288,6 @@ cursor:pointer
         if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
         
         window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone*3600))+"&end="+(export_end+(export_timezone*3600))+"&interval="+export_interval);
-    });
-    
-    ("#addition-mode").click(function()
-    {
-        return false;
-        //var feedid = $(this).attr('feedid');
-        //var export_start = parse_timepicker_time($("#export-start").val());
-        //var export_end = parse_timepicker_time($("#export-end").val());
-        //var export_interval = $("#export-interval").val();
-        //var export_timezone = parseInt($("#export-timezone").val());
     });
     
     function parse_timepicker_time(timestr)
