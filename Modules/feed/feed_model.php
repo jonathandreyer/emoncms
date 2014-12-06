@@ -504,9 +504,10 @@ class Feed
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
         $feedid = (int) $feedid;
+        $additionmode = (boolean) $additionmode;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->get_engine($feedid);
@@ -519,7 +520,7 @@ class Feed
         }
 
         // Call to engine get_average method
-        return $this->engine[$engine]->csv_export($feedid,$start,$end,$outinterval);
+        return $this->engine[$engine]->csv_export($feedid,$start,$end,$outinterval,$additionmode);
     }
 
 
