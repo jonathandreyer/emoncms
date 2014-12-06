@@ -105,8 +105,9 @@ cursor:pointer
             </td>
         </tr>
         <tr>
-            <td><br><button class="btn" id="export">Export</button></td><td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
-            <td><div class="checkbox"><label><input type="checkbox"> Change mode average to addition</label></tr>
+            <td><br><button class="btn" id="export">Export</button></td>
+            <td><div class="checkbox"><label><input type="addition-mode"> Change mode average to addition</label></tr>
+            <td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
         </tr>
         </table>
         <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
@@ -279,6 +280,16 @@ cursor:pointer
         if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
         
         window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone*3600))+"&end="+(export_end+(export_timezone*3600))+"&interval="+export_interval);
+    });
+    
+    ("#addition-mode").click(function()
+    {
+        return false;
+        //var feedid = $(this).attr('feedid');
+        //var export_start = parse_timepicker_time($("#export-start").val());
+        //var export_end = parse_timepicker_time($("#export-end").val());
+        //var export_interval = $("#export-interval").val();
+        //var export_timezone = parseInt($("#export-timezone").val());
     });
     
     function parse_timepicker_time(timestr)
