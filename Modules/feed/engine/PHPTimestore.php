@@ -679,7 +679,7 @@ class PHPTimestore
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -815,9 +815,13 @@ class PHPTimestore
                 // If there was a value in the block then add to data array
             if ($points_in_sum) {
                 $timestamp = $meta->start + $layer_interval * ($point+$i-1);
-                $average = $point_sum / $points_in_sum;
-                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
-                //print "--".$average."<br>";
+                if (!$additionmode) {
+                	$valuetoexport = $point_sum / $points_in_sum;
+                } else {
+                	$valuetoexport = $point_sum;
+                }
+                fwrite($exportfh, $timestamp.",".number_format($valuetoexport,2)."\n");
+                //print "--".$valuetoexport."<br>";
             }
 
         }

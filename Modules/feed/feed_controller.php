@@ -78,7 +78,7 @@ function feed_controller()
                     if ($route->action == "delete") $result = $feed->delete($feedid);
                     if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
                     
-                    if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
+                    if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('addition'));
                     
                     if ($f['engine']==Engine::TIMESTORE) {
                         if ($route->action == "export") $result = $feed->timestore_export($feedid,get('start'),get('layer'));

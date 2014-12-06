@@ -241,13 +241,16 @@ class MysqlTimeSeries
     
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
         //echo $feedid;
         $outinterval = intval($outinterval);
         $feedid = intval($feedid);
         $start = floatval($start/1000);
         $end = floatval($end/1000);
+        
+        //Methode to addition is not implemented
+        if ($additionmode) return false;
         
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);

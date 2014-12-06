@@ -333,12 +333,15 @@ class PHPTimeSeries
     
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
+        
+        //Methode to addition is not implemented
+        if ($additionmode) return false;
         
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);

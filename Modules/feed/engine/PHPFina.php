@@ -429,12 +429,15 @@ class PHPFina
         } while ($npadding); 
     }
     
-    public function csv_export($id,$start,$end,$outinterval)
+    public function csv_export($id,$start,$end,$outinterval,$additionmode)
     {
         $id = intval($id);
         $start = intval($start);
         $end = intval($end);
         $outinterval= (int) $outinterval;
+        
+        //Methode to addition is not implemented
+        if ($additionmode) return false;
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;

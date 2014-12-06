@@ -133,7 +133,7 @@ class Histogram
     
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
     
     }

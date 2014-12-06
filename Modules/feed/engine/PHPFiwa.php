@@ -783,7 +783,7 @@ class PHPFiwa
         return $meta;
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -878,10 +878,14 @@ class PHPFiwa
             // If there was a value in the block then add to data array
             if ($points_in_sum) {
                 $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
-                $average = $point_sum / $points_in_sum;
-                //$data[] = array($timestamp*1000,$average);
+                if (!$additionmode) {
+                	$valuetoexport = $point_sum / $points_in_sum;
+                } else {
+                	$valuetoexport = $point_sum;
+                }
+                //$data[] = array($timestamp*1000,$valuetoexport);
                 
-                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
+                fwrite($exportfh, $timestamp.",".number_format($valuetoexport,2)."\n");
             }
         }
         
