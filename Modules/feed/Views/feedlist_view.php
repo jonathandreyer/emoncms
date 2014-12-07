@@ -321,7 +321,7 @@ cursor:pointer
         var export_end = parse_timepicker_time($("#export-end").val());
         var export_interval = $("#export-interval").val();
         var export_timezone = parseInt($("#export-timezone").val());
-		var export_mode_addition = document.getElementById('checkbox-addition-mode').checked;
+		var export_mode_addition = document.getElementById('checkbox-addition-mode').checked ? 1 : 0;
         
 		if (export_mode_addition) {alert("Function not install"); return false; }
         if (!export_start) {alert("Please enter a valid start date"); return false; }

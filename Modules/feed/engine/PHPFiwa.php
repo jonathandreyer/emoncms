@@ -857,6 +857,13 @@ class PHPFiwa
         fseek($fh,$startpos*4);
         $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
         fclose($fh);
+        
+        //Show thype of export (average or addition)
+        if ($additionmode) {
+            fwrite($exportfh, "Addition\n");
+        } else {
+            fwrite($exportfh, "Average\n");
+        }
 
         $count = count($layer_values)-1;
         
