@@ -685,6 +685,7 @@ class PHPTimestore
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
+        $additionmode = (int) $additionmode;
 
         if ($end == 0) $end = time();
 
@@ -793,6 +794,14 @@ class PHPTimestore
         //print "count: ".$count."<br>";
 
         //print "Layer values: <br>";
+        
+        //For testing
+		//Show thype of export (average or addition)
+		if ($additionmode) {
+			fwrite($exportfh, "Addition\n");
+		} else {
+			fwrite($exportfh, "Average\n");
+		}
 
         // Read in steps of tge averaged block size
         for ($i=1; $i<$count-$naverage; $i+=$naverage)

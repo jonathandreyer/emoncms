@@ -265,7 +265,8 @@ class Timestore
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
-        
+        $additionmode = (int) $additionmode;
+                
         $meta->decimation = array(20, 6, 6, 4, 7);
 
         /* Sanity check */
@@ -362,6 +363,14 @@ class Timestore
         //print "count: ".$count."<br>";
 
         //print "Layer values: <br>";
+        
+        //For testing
+		//Show thype of export (average or addition)
+		if ($additionmode) {
+			fwrite($exportfh, "Addition\n");
+		} else {
+			fwrite($exportfh, "Average\n");
+		}
 
         // Read in steps of tge averaged block size
         for ($i=1; $i<$count-$naverage; $i+=$naverage)

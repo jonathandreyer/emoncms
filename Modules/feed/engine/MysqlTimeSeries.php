@@ -248,9 +248,13 @@ class MysqlTimeSeries
         $feedid = intval($feedid);
         $start = floatval($start/1000);
         $end = floatval($end/1000);
+        $additionmode = (int) $additionmode;
         
         //Methode to addition is not implemented
-        if ($additionmode) return false;
+        if ($additionmode) {
+			$this->log->warn("Addition mode on csv_export is not implemented on id=".$meta->id);
+			return false;
+		}
         
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);

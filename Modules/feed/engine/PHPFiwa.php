@@ -789,6 +789,7 @@ class PHPFiwa
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
+        $additionmode = (int) $additionmode;
         
         $layer = 0;
 

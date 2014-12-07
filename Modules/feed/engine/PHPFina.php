@@ -435,9 +435,13 @@ class PHPFina
         $start = intval($start);
         $end = intval($end);
         $outinterval= (int) $outinterval;
+        $additionmode = (int) $additionmode;
         
         //Methode to addition is not implemented
-        if ($additionmode) return false;
+        if ($additionmode) {
+			$this->log->warn("Addition mode on csv_export is not implemented on id=".$meta->id);
+			return false;
+		}
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
