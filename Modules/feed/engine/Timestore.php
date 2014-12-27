@@ -261,6 +261,10 @@ class Timestore
     
     public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
+        global $csv_decimal_places;
+        global $csv_decimal_place_separator;
+        global $csv_field_separator;
+
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
@@ -398,8 +402,8 @@ class Timestore
                 } else {
                 	$valuetoexport = $point_sum;
                 }
-                fwrite($exportfh, $timestamp.",".number_format($valuetoexport,2)."\n");
-                //print "--".$valuetoexport."<br>";
+                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($valuetoexport,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                //print "--".$average."<br>";
             }
 
         }

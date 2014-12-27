@@ -85,7 +85,7 @@ cursor:pointer
                     <option value=5>5s</option>
                     <option value=10>10s</option>
                     <option value=30>30s</option>
-                    <option value=60>1 mi</option>
+                    <option value=60>1 min</option>
                     <option value=300>5 mins</option>
                     <option value=600>10 mins</option>
                     <option value=900>15 mins</option>

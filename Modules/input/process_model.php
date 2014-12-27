@@ -18,6 +18,7 @@ class Process
     private $input;
     private $feed;
     private $log;
+    private $mqtt = false;
     
     private $timezoneoffset = 0;
 
@@ -27,6 +28,16 @@ class Process
             $this->input = $input;
             $this->feed = $feed;
             $this->log = new EmonLogger(__FILE__);
+            
+        // Load MQTT if enabled
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        global $mqtt_enabled, $mqtt;
+        if (isset($mqtt_enabled) && $mqtt_enabled == true & $mqtt == false)
+        {
+            require("Lib/phpMQTT.php");
+            $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
+            $this->mqtt = $mqtt;
+        }
     }
     
     public function set_timezone_offset($timezoneoffset)
@@ -96,6 +107,7 @@ class Process
         //New feature for accumulate input between time feed and reset after save value on feed
         $list[35] = array(_("Accumulate and feed"),ProcessArg::FEEDID,"Accum_and_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
+        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -637,6 +649,17 @@ class Process
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 
         return $totalwh;
+    }
+    
+    public function publish_to_mqtt($topic, $time, $value)
+    {
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        if ($this->mqtt && $this->mqtt->connect()) {
+            $this->mqtt->publish($topic,$value,0);
+            $this->mqtt->close();
+        }
+        
+        return $value;
     }
 
     // No longer used

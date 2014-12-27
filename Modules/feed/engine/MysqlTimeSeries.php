@@ -243,6 +243,10 @@ class MysqlTimeSeries
     
     public function csv_export($feedid,$start,$end,$outinterval,$additionmode)
     {
+        global $csv_decimal_places;
+        global $csv_decimal_place_separator;
+        global $csv_field_separator;
+
         //echo $feedid;
         $outinterval = intval($outinterval);
         $feedid = intval($feedid);
@@ -296,7 +300,7 @@ class MysqlTimeSeries
                 if ($stmt->fetch()) {
                     if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
                         $time = $dataTime * 1000;
-                        fwrite($exportfh, $dataTime.",".number_format($dataValue,2)."\n");
+                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format($dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
                 $t = $tb;
@@ -320,7 +324,7 @@ class MysqlTimeSeries
                     $dataValue = $row['data'];
                     if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * 1000 * $td;
-                        fwrite($exportfh, $dataTime.",".number_format($dataValue,2)."\n");
+                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format($dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
             }
