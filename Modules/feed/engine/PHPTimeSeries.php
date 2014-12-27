@@ -343,7 +343,7 @@ class PHPTimeSeries
         
         //Methode to addition is not implemented
 		if ($additionmode) {
-			$this->log->warn("Addition mode on csv_export is not implemented on id=".$meta->id);
+			$this->log->warn("Addition mode on csv_export is not implemented on id=".$feedid);
 			return false;
 		}
         

@@ -188,47 +188,21 @@ cursor:pointer
         } });
     }
 
-    function getFeedInterval(idFeed)
+    function setFeedInterval(idFeed)
     {   
 		var idFeed = parseInt(idFeed);
         var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
         
         $.ajax({ url: path+"feed/getmeta.json"+apikeystr+"?id="+idFeed, dataType: 'json', async: true, success: function(data) {
-        	
-		//retourner la valeur en sec
-		interval = 10;
-		//alert("value return: " + interval);
-
-
-		//
-		$("#IntervalTimeFeed").html(interval);
-
-		//$("#export-interval").html(interval);
-
-
-            /*table.data = data;
-        
-            for (z in table.data)
-            {
-                if (table.data[z].size<1024*100) {
-                    table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
-                } else if (table.data[z].size<1024*1024) {
-                    table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
-                } else if (table.data[z].size>=1024*1024) {
-                    table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
-                }
-            }
-            table.draw();
-            if (table.data.length != 0) {
-                $("#nofeeds").hide();
-                $("#apihelphead").show();
-                $("#localheading").show();
-            } else {
-                $("#nofeeds").show();
-                $("#localheading").hide();
-                $("#apihelphead").hide();
-            }
-*/
+		if (data.interval) {
+			interval = parseInt(data.interval);
+			$("#export-interval").val(interval);
+			if (interval>=(60*60)) { $("#IntervalTimeFeed").html((interval/(60*60))+" h"); }
+			else if (interval>=60) { $("#IntervalTimeFeed").html((interval/60)+" min"); }
+			else { $("#IntervalTimeFeed").html(interval+" sec"); }
+		} else {
+			$("#IntervalTimeFeed").html("");
+		}
         } });
     }
 
@@ -270,13 +244,12 @@ cursor:pointer
     $("#table").on("click",".icon-circle-arrow-down", function(){
         var row = $(this).attr('row');
 
-	getFeedInterval(table.data[row].id);
-
+	setFeedInterval(table.data[row].id);
 	$("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
         $("#export").attr('feedid',table.data[row].id);
 	
-		//TODO Change value en fonction de type de feed
-		//$("#checkbox-addition-mode").attr("checked",true);
+	//TODO Change value en fonction de type de feed
+	//$("#checkbox-addition-mode").attr("checked",true);
 
         if ($("#export-timezone").val()=="") {
             var u = user.get();
@@ -323,7 +296,7 @@ cursor:pointer
         var export_timezone = parseInt($("#export-timezone").val());
 		var export_mode_addition = document.getElementById('checkbox-addition-mode').checked ? 1 : 0;
         
-		if (export_mode_addition) {alert("Function not install"); return false; }
+		//if (export_mode_addition) {alert("Function not install"); return false; }
         if (!export_start) {alert("Please enter a valid start date"); return false; }
         if (!export_end) {alert("Please enter a valid end date"); return false; }
         if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
