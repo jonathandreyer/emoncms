@@ -1,3 +1,11 @@
+## New feature in this branch
+
+- New process to accumlate every input input a buffer into interval of feed
+- Add value of 900sec for 15min (interval feed, export)
+- Show interval into export menu
+- Feature for export csv and addition feed
+
+
 # Emoncms 8
 
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
