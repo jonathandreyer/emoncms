@@ -104,11 +104,13 @@ class Process
         
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
-        //New feature for accumulate input between time feed and reset after save value on feed
-        $list[35] = array(_("Accumulate and feed"),ProcessArg::FEEDID,"Accum_and_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
-        
         $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
+
+        //New feature for accumulate input between time feed and reset after save value on feed
+        //For the moment, just on PHPFINA
+        //$list[36] = array(_("Accumulate and feed"),ProcessArg::FEEDID,"Accum_and_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));
+        $list[36] = array(_("Accumulate and feed"),ProcessArg::FEEDID,"accum_and_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFINA));
 
         return $list;
     }
@@ -182,16 +184,6 @@ class Process
     public function log_to_feed($id, $time, $value)
     {
         $this->feed->insert_data($id, $time, $time, $value);
-
-        return $value;
-    }
-    
-    //---------------------------------------------------------------------------------------
-    // Accumlate all new input. Put in redis and when the interval is end, log to feed
-    //---------------------------------------------------------------------------------------
-    public function Accum_and_feed($id, $time, $value)
-    {
-        //$this->feed->insert_data($id, $time, $time, $value);
 
         return $value;
     }
@@ -660,6 +652,55 @@ class Process
         }
         
         return $value;
+    }
+    
+    //---------------------------------------------------------------------------------------
+    // Accumlate all new input. Put in redis and when the interval is end, log to feed
+    //---------------------------------------------------------------------------------------
+    public function accum_and_feed($feedid, $time, $value)
+    {
+    	global $redis;
+    	if (!$redis) return $value; // return if redis is not available
+    	
+    	$update_metadata_redis =  function() use ($feedid,$time,$redis) {
+    		$meta = $this->feed->get_meta($feedid);
+    		$redis->hMset("feed:metadata:$feedid", array('start_time' => $meta->start_time, 'interval' => $meta->interval, 'time_update_metadata' => $time));
+    	};
+    	
+    	$accum = $value;
+    	
+    	if (!($redis->exists("feed:metadata:$feedid"))) { $update_metadata_redis(); }
+    
+    	if ($redis->exists("process:accum_and_feed:$feedid")) {
+    		//Get information of last value
+    		$last_input = $redis->hmget("process:accum_and_feed:$feedid",array('time','value'));
+    		
+    		//Get metadata from redis
+    		$meta = $redis->hmget("feed:metadata:$feedid",array('start_time','interval','time_update_metadata'));
+    		
+    		//Calcul index in feed
+    		if ($meta['start_time'] > 0) {
+				$index_last = floor(($last_input['time'] - $meta['start_time']) / $meta['interval']);
+				$index_now = floor(($time - $meta['start_time']) / $meta['interval']);
+			} else {
+				$index_last = floor(($last_input['time'] - $meta['time_update_metadata']) / $meta['interval']);
+				$index_now = floor(($time - $meta['time_update_metadata']) / $meta['interval']);
+			}
+
+    		if ($index_last < $index_now) {
+				$this->feed->insert_data($feedid, $last_input['time'], $last_input['time'], $last_input['value']);
+				
+				//Update metadata from feed engine (just for the 1st cycle)
+				if ($meta['start_time'] == 0) { $update_metadata_redis(); }
+			} else {
+				$accum += $last_input_value;
+			}
+    		
+    		//TODO Add zero if not value! 
+    	}
+    	$redis->hMset("process:accum_and_feed:$feedid", array('time' => $time, 'value' => $accum));
+    	
+    	return $value;
     }
 
     // No longer used

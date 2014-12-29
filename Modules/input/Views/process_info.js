@@ -26,7 +26,10 @@ var process_info = {
     
     '34':"To be used in conjunction with an emontx sending total watt hours elapsed to emoncms. This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW.<br><b>Requires redis installed to work</b>",
     
-    '21':"Convert accumulating kWh to instantaneous power"
+    '21':"Convert accumulating kWh to instantaneous power",
+    	
+    '36':"Accumulate all value during the time of the feed. Return the input value of this process.<br><b>Requires redis installed to work</b>"
+        
 }
 
 
