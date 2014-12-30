@@ -429,6 +429,7 @@ class PHPFina
         } while ($npadding); 
     }
     
+    //TODO Remove all commentaire
     public function csv_export($id,$start,$end,$outinterval,$additionmode)
     {
         global $csv_decimal_places;
@@ -491,7 +492,15 @@ class PHPFina
 
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
-
+        
+        //FOR DEBUG
+        //Show thype of export (average or addition)
+        if ($additionmode) {
+        	fwrite($exportfh, "Addition\n");
+        } else {
+        	fwrite($exportfh, "Average\n");
+        }
+		
 
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
