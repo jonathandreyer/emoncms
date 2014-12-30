@@ -441,16 +441,11 @@ class PHPFina
         $outinterval= (int) $outinterval;
         $additionmode = (int) $additionmode;
         
-        //Methode to addition is not implemented
-        if ($additionmode) {
-			$this->log->warn("Addition mode on csv_export is not implemented on id=".$id);
-			return false;
-		}
-
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
         
         if ($outinterval<$meta->interval) $outinterval = $meta->interval;
+        
         $dp = ceil(($end - $start) / $outinterval);
         $end = $start + ($dp * $outinterval);
         
@@ -465,15 +460,15 @@ class PHPFina
         // datapoints every 100 datapoints.
         $skipsize = round($dp_in_range / $dp);
         if ($skipsize<1) $skipsize = 1;
-
+        
         // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
+        if ($start>=$meta->start_time) {
+        	$startpos = ceil(($start - $meta->start_time) / $meta->interval);
         } else {
-            $start = ceil($meta->start_time / $outinterval) * $outinterval;
+        	$start = ceil($meta->start_time / $outinterval) * $outinterval;
             $startpos = ceil(($start - $meta->start_time) / $meta->interval);
         }
-
+        
         $data = array();
         $time = 0; $i = 0;
         
@@ -491,29 +486,56 @@ class PHPFina
 
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
-
+        
+        //Show thype of export (average or addition)
+        if ($additionmode) {
+        	fwrite($exportfh, "Addition mode\n");
+        }
 
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
         $fh = fopen($this->dir.$id.".dat", 'rb');
         while($time<=$end)
         {
-            // $position steps forward by skipsize every loop
+        	// $position steps forward by skipsize every loop
             $pos = ($startpos + ($i * $skipsize));
-
-            // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints-1) break;
-
-            // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
-
-            // calculate the datapoint time
-            $time = $meta->start_time + $pos * $meta->interval;
-
+            
+            //Declare variables
+            $valuetoexport = 0;
+            $time;
+            
+            if (!$additionmode) {
+            	// Exit the loop if the position is beyond the end of the file
+            	if ($pos > $meta->npoints-1) break;
+            	
+	            // read from the file
+	            fseek($fh,$pos*4);
+	            $val = unpack("f",fread($fh,4));
+	            $valuetoexport = $val[1];
+	            
+	            // calculate the datapoint time
+	            $time = $meta->start_time + $pos * $meta->interval;
+			} else {
+				// Calculate the starting datapoint position in the timestore file
+            	$posend = $pos + $skipsize;
+            	
+            	// Exit the loop if the position is beyond the end of the file
+            	if ($posend > $meta->npoints-1) break;
+            	
+            	for ($j = $pos+1; $j <= $posend; $j++) {
+            		//Sum all value in $valuetoexport, only if value is !NaN
+            		fseek($fh,$j*4);
+            		$val = unpack("f",fread($fh,4));
+            		if (!is_nan($val[1])) $valuetoexport += $val[1];
+            	}
+            	//TODO Not printf into file if $valuetoexport
+            	
+            	// calculate the datapoint time
+            	$time = $meta->start_time + $posend * $meta->interval;
+            }
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $time.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
-
+	        if (!is_nan($valuetoexport)) fwrite($exportfh, $time.$csv_field_separator.number_format($valuetoexport,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+            
             $i++;
         }
         fclose($exportfh);
