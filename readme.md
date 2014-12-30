@@ -1,9 +1,9 @@
 ## New feature in this branch
 
-- New process to accumlate every input input a buffer into interval of feed
+- New process to accumlate every input in a buffer and store on feed @interval of feed
 - Add value of 900sec for 15min (interval feed, export)
-- Show interval into export menu
-- Feature for export csv and addition feed
+- Show interval in export menu
+- Feature for export csv and addition feed (PHPFina)
 
 
 # Emoncms 8
