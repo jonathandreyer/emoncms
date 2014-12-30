@@ -796,6 +796,12 @@ class PHPFiwa
         $additionmode = (int) $additionmode;
         
         $layer = 0;
+        
+        //Mode addition is not implemented
+        if ($additionmode) {
+			$this->log->warn("Addition mode on csv_export is not implemented on id=".$feedid);
+			return false;
+		}
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
@@ -862,13 +868,6 @@ class PHPFiwa
         fseek($fh,$startpos*4);
         $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
         fclose($fh);
-        
-        //Show thype of export (average or addition)
-        if ($additionmode) {
-            fwrite($exportfh, "Addition\n");
-        } else {
-            fwrite($exportfh, "Average\n");
-        }
 
         $count = count($layer_values)-1;
         
@@ -890,14 +889,10 @@ class PHPFiwa
             // If there was a value in the block then add to data array
             if ($points_in_sum) {
                 $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
-                if (!$additionmode) {
-                	$valuetoexport = $point_sum / $points_in_sum;
-                } else {
-                	$valuetoexport = $point_sum;
-                }
-                //$data[] = array($timestamp*1000,$valuetoexport);
+                $average = $point_sum / $points_in_sum;
+                //$data[] = array($timestamp*1000,$average);
                 
-                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($valuetoexport,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
             }
         }
         

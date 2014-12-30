@@ -272,6 +272,12 @@ class Timestore
         $additionmode = (int) $additionmode;
                 
         $meta->decimation = array(20, 6, 6, 4, 7);
+        
+        //Mode addition is not implemented
+        if ($additionmode) {
+			$this->log->warn("Addition mode on csv_export is not implemented on id=".$feedid);
+			return false;
+		}
 
         /* Sanity check */
         if ($end < $start) return false;
@@ -367,14 +373,6 @@ class Timestore
         //print "count: ".$count."<br>";
 
         //print "Layer values: <br>";
-        
-        //For testing
-		//Show thype of export (average or addition)
-		if ($additionmode) {
-			fwrite($exportfh, "Addition\n");
-		} else {
-			fwrite($exportfh, "Average\n");
-		}
 
         // Read in steps of tge averaged block size
         for ($i=1; $i<$count-$naverage; $i+=$naverage)
@@ -397,12 +395,8 @@ class Timestore
                 // If there was a value in the block then add to data array
             if ($points_in_sum) {
                 $timestamp = $meta->start + $layer_interval * ($point+$i-1);
-                if (!$additionmode) {
-                	$valuetoexport = $point_sum / $points_in_sum;
-                } else {
-                	$valuetoexport = $point_sum;
-                }
-                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($valuetoexport,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                $average = $point_sum / $points_in_sum;
+                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                 //print "--".$average."<br>";
             }
 
